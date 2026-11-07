@@ -16,3 +16,8 @@ Run the skill with `fixtures/monolith/openapi.yaml` as side A and
 `fixtures/decomposed/api/openapi.yaml` as side B, then check its report against
 what was actually planted. The answer key for the fixtures is kept outside
 this repo on purpose, so the skill can't read it.
+
+## Testing the skill
+Run a zero-diff control first (compare `fixtures/monolith/openapi.yaml` against
+itself) before running it against `fixtures/decomposed/api/openapi.yaml`, to
+confirm the report format works before judging correctness on the real case.
