@@ -1,0 +1,21 @@
+PatientId:
+  name: patientId
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+DoctorId:
+  name: doctorId
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+AppointmentId:
+  name: appointmentId
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid

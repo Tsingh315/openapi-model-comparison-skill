@@ -1,0 +1,45 @@
+post:
+  tags: [appointments]
+  operationId: createAppointment
+  summary: Book an appointment
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/CreateAppointmentRequest.yaml'
+  responses:
+    '201':
+      description: Appointment booked
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Appointment.yaml'
+    '400':
+      $ref: '../components/responses.yaml#/BadRequest'
+    '409':
+      description: Slot already taken
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Error.yaml'
+get:
+  tags: [appointments]
+  operationId: listAppointments
+  summary: List appointments for a patient
+  parameters:
+    - name: patientId
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    '200':
+      description: Appointments
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/Appointment.yaml'

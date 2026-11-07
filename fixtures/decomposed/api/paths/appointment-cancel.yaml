@@ -1,0 +1,29 @@
+post:
+  tags: [appointments]
+  operationId: cancelAppointment
+  summary: Cancel an appointment
+  parameters:
+    - $ref: '../components/parameters.yaml#/AppointmentId'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [reason]
+          properties:
+            reason:
+              type: string
+              maxLength: 1000
+            notifyDoctor:
+              type: boolean
+              default: false
+  responses:
+    '200':
+      description: Appointment cancelled
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Appointment.yaml'
+    '404':
+      $ref: '../components/responses.yaml#/NotFound'

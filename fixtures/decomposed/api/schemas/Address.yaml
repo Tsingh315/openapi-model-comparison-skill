@@ -1,0 +1,19 @@
+type: object
+required: [line1, city, postalCode, country]
+properties:
+  line1:
+    type: string
+  line2:
+    type: string
+  city:
+    type: string
+  province:
+    type: string
+  postalCode:
+    type: string
+  country:
+    type: string
+    minLength: 2
+    maxLength: 2
+    description: ISO 3166-1 alpha-2 country code
+    example: CAN

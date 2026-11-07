@@ -1,0 +1,18 @@
+allOf:
+  - $ref: './Person.yaml'
+  - type: object
+    required: [dateOfBirth, email]
+    properties:
+      dateOfBirth:
+        type: string
+        format: date-time
+      email:
+        type: string
+        format: email
+        maxLength: 320
+      phone:
+        type: string
+        pattern: '^\+[1-9]\d{1,14}$'
+        description: Phone number in E.164 format
+      address:
+        $ref: './Address.yaml'

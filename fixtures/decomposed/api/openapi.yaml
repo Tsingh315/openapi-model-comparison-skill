@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: Clinic Booking API
+  version: 1.1.0
+  description: Book, view and cancel doctor appointments.
+servers:
+  - url: https://api.clinic-booking.example.com/v1
+tags:
+  - name: patients
+  - name: doctors
+  - name: appointments
+paths:
+  /patients:
+    $ref: './paths/patients.yaml'
+  /patients/{patientId}:
+    $ref: './paths/patient-by-id.yaml'
+  /doctors:
+    $ref: './paths/doctors.yaml'
+  /doctors/{doctorId}:
+    $ref: './paths/doctor-by-id.yaml'
+  /doctors/{doctorId}/slots:
+    $ref: './paths/doctor-slots.yaml'
+  /appointments:
+    $ref: './paths/appointments.yaml'
+  /appointments/{appointmentId}:
+    $ref: './paths/appointment-by-id.yaml'
+  /appointments/{appointmentId}/cancel:
+    $ref: './paths/appointment-cancel.yaml'
+components:
+  parameters:
+    PatientId:
+      $ref: './components/parameters.yaml#/PatientId'
+    DoctorId:
+      $ref: './components/parameters.yaml#/DoctorId'
+    AppointmentId:
+      $ref: './components/parameters.yaml#/AppointmentId'
+  responses:
+    BadRequest:
+      $ref: './components/responses.yaml#/BadRequest'
+    NotFound:
+      $ref: './components/responses.yaml#/NotFound'
+  schemas:
+    Person:
+      $ref: './schemas/Person.yaml'
+    Address:
+      $ref: './schemas/Address.yaml'
+    Patient:
+      $ref: './schemas/Patient.yaml'
+    Doctor:
+      $ref: './schemas/Doctor.yaml'
+    AvailabilitySlot:
+      $ref: './schemas/AvailabilitySlot.yaml'
+    AppointmentStatus:
+      $ref: './schemas/AppointmentStatus.yaml'
+    AppointmentType:
+      $ref: './schemas/AppointmentType.yaml'
+    Appointment:
+      $ref: './schemas/Appointment.yaml'
+    CreateAppointmentRequest:
+      $ref: './schemas/CreateAppointmentRequest.yaml'
+    Error:
+      $ref: './schemas/Error.yaml'

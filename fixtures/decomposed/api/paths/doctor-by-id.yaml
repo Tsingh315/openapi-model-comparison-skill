@@ -1,0 +1,15 @@
+get:
+  tags: [doctors]
+  operationId: getDoctor
+  summary: Get a doctor
+  parameters:
+    - $ref: '../components/parameters.yaml#/DoctorId'
+  responses:
+    '200':
+      description: The doctor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Doctor.yaml'
+    '404':
+      $ref: '../components/responses.yaml#/NotFound'

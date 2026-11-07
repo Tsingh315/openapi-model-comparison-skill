@@ -1,0 +1,13 @@
+type: object
+required: [firstName, lastName]
+properties:
+  id:
+    type: string
+    format: uuid
+    readOnly: true
+  firstName:
+    type: string
+    maxLength: 100
+  lastName:
+    type: string
+    maxLength: 100

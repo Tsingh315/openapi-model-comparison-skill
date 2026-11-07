@@ -1,0 +1,2 @@
+type: string
+enum: [IN_PERSON, VIDEO, PHONE]

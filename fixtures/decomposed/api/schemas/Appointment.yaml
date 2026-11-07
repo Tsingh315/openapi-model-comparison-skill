@@ -1,0 +1,33 @@
+type: object
+required: [id, patientId, doctorId, startTime, durationMinutes, status, type]
+properties:
+  id:
+    type: string
+    format: uuid
+  patientId:
+    type: string
+    format: uuid
+  doctorId:
+    type: string
+    format: uuid
+  startTime:
+    type: string
+    format: date-time
+  durationMinutes:
+    type: integer
+    format: int64
+    minimum: 5
+    maximum: 240
+  status:
+    $ref: './AppointmentStatus.yaml'
+  type:
+    $ref: './AppointmentType.yaml'
+  reason:
+    type: string
+    description: Patient-supplied reason for the visit
+  notes:
+    type: string
+  telehealthLink:
+    type: string
+    format: uri
+    description: Video call link, present only for VIDEO appointments

@@ -1,0 +1,20 @@
+get:
+  tags: [doctors]
+  summary: List open time slots for a doctor
+  parameters:
+    - $ref: '../components/parameters.yaml#/DoctorId'
+    - name: date
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date
+  responses:
+    '200':
+      description: Open slots
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/AvailabilitySlot.yaml'

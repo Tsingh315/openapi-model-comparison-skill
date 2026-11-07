@@ -1,0 +1,12 @@
+type: object
+required: [doctorId, start, end]
+properties:
+  doctorId:
+    type: string
+    format: uuid
+  start:
+    type: string
+    format: date-time
+  end:
+    type: string
+    format: date-time

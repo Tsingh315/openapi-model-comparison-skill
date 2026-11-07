@@ -1,0 +1,20 @@
+type: object
+required: [patientId, doctorId, startTime, type]
+properties:
+  patientId:
+    type: string
+    format: uuid
+  doctorId:
+    type: string
+    format: uuid
+  startTime:
+    type: string
+    format: date-time
+  durationMinutes:
+    type: integer
+    format: int32
+    default: 30
+  type:
+    $ref: './AppointmentType.yaml'
+  reason:
+    type: string

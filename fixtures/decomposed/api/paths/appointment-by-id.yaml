@@ -1,0 +1,15 @@
+get:
+  tags: [appointments]
+  operationId: getAppointment
+  summary: Get an appointment
+  parameters:
+    - $ref: '../components/parameters.yaml#/AppointmentId'
+  responses:
+    '200':
+      description: The appointment
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Appointment.yaml'
+    '404':
+      $ref: '../components/responses.yaml#/NotFound'

@@ -1,0 +1,20 @@
+type: object
+required: [id, firstName, lastName, specialization]
+properties:
+  id:
+    type: string
+    format: uuid
+  firstName:
+    type: string
+  lastName:
+    type: string
+  specialization:
+    type: string
+  yearsOfExperience:
+    type: integer
+    format: int32
+  acceptingNewPatients:
+    type: boolean
+    default: true
+  clinicAddress:
+    $ref: './Address.yaml'

@@ -1,0 +1,19 @@
+post:
+  tags: [patients]
+  operationId: createPatient
+  summary: Register a patient
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/Patient.yaml'
+  responses:
+    '201':
+      description: Patient created
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Patient.yaml'
+    '400':
+      $ref: '../components/responses.yaml#/BadRequest'
