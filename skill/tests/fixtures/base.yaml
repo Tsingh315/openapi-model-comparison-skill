@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: Selftest Orders API
+  version: 1.0.0
+paths:
+  /orders:
+    get:
+      operationId: listOrders
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    post:
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  /orders/{orderId}/window:
+    get:
+      operationId: getDeliveryWindow
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Window
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryWindow'
+components:
+  schemas:
+    OrderStatus:
+      type: string
+      enum: [NEW, PAID, SHIPPED, LOST]
+    Customer:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        loyaltyId:
+          type: string
+    DeliveryWindow:
+      type: object
+      required: [from, to]
+      properties:
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+    Order:
+      type: object
+      required: [id, quantity, status]
+      properties:
+        id:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        placedOn:
+          type: string
+          format: date
+        category:
+          type: string
+        note:
+          type: string
+          maxLength: 200
+          nullable: true
+        giftWrap:
+          type: boolean
+          default: true
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        email:
+          type: string
+          description: Contact email
