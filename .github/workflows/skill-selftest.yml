@@ -1,0 +1,57 @@
+name: skill-selftest
+
+# Proves the comparison tooling still works: a zero-diff control must report
+# nothing, and all 18 planted differences must be found with the expected impact.
+on:
+  pull_request:
+    paths:
+      - 'skill/**'
+      - '.github/workflows/skill-selftest.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'skill/**'
+      - '.github/workflows/skill-selftest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skill-selftest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: skill/assets/pom.xml
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache openapi-generator CLI
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/openapi-model-comparison
+          key: openapi-generator-cli-${{ hashFiles('skill/scripts/compare.sh') }}
+
+      - name: Run self-test
+        run: skill/tests/selftest.sh "$RUNNER_TEMP/selftest"
+
+      - name: Upload reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selftest-output
+          path: ${{ runner.temp }}/selftest
+          retention-days: 7
