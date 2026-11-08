@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Generates Java models from two OpenAPI 3.0 specs, side by side, with identical
+  generator settings, and compiles both sets. Used by scripts/compare.sh. Run it
+  directly like this:
+
+    mvn -B compile -Dspec1=/abs/path/a.yaml -Dspec2=/abs/path/b.yaml
+
+  Output:
+    target/generated-sources/spec1  -> package com.compare.spec1.model
+    target/generated-sources/spec2  -> package com.compare.spec2.model
+    target/classes                  -> compiled classes for both
+
+  Pin every version here. A comparison is only reproducible if the generator
+  and its templates are the same on every run.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.compare</groupId>
+  <artifactId>openapi-model-comparison</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- Overridable from the command line: -Dopenapi-generator.version=... -->
+    <openapi-generator.version>7.10.0</openapi-generator.version>
+    <generator.name>spring</generator.name>
+
+    <!-- Required. No defaults, so a missing value fails fast in the enforcer. -->
+    <spec1/>
+    <spec2/>
+  </properties>
+
+  <dependencies>
+    <!-- Exactly what the generated spring model classes need to compile. -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.17.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.17.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>0.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+    <dependency>
+      <!-- @DateTimeFormat on date / date-time fields -->
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>6.1.14</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.22</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>require-inputs</id>
+            <phase>validate</phase>
+            <goals><goal>enforce</goal></goals>
+            <configuration>
+              <rules>
+                <requireProperty><property>spec1</property><regex>.+</regex><message>Pass -Dspec1=/path/to/first/openapi.yaml</message></requireProperty>
+                <requireProperty><property>spec2</property><regex>.+</regex><message>Pass -Dspec2=/path/to/second/openapi.yaml</message></requireProperty>
+                <requireJavaVersion><version>[17,)</version></requireJavaVersion>
+                <requireMavenVersion><version>[3.8,)</version></requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator.version}</version>
+        <!-- Shared by both executions, so any difference in output comes from the specs alone. -->
+        <configuration>
+          <generatorName>${generator.name}</generatorName>
+          <generateApis>false</generateApis>
+          <generateApiTests>false</generateApiTests>
+          <generateModelTests>false</generateModelTests>
+          <generateModelDocumentation>false</generateModelDocumentation>
+          <generateSupportingFiles>false</generateSupportingFiles>
+          <validateSpec>true</validateSpec>
+          <configOptions>
+            <useSpringBoot3>true</useSpringBoot3>
+            <useJakartaEe>true</useJakartaEe>
+            <useBeanValidation>true</useBeanValidation>
+            <openApiNullable>true</openApiNullable>
+            <dateLibrary>java8</dateLibrary>
+            <sourceFolder>src/main/java</sourceFolder>
+            <hideGenerationTimestamp>true</hideGenerationTimestamp>
+          </configOptions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spec1</id>
+            <goals><goal>generate</goal></goals>
+            <configuration>
+              <inputSpec>${spec1}</inputSpec>
+              <output>${project.build.directory}/generated-sources/spec1</output>
+              <modelPackage>com.compare.spec1.model</modelPackage>
+            </configuration>
+          </execution>
+          <execution>
+            <id>spec2</id>
+            <goals><goal>generate</goal></goals>
+            <configuration>
+              <inputSpec>${spec2}</inputSpec>
+              <output>${project.build.directory}/generated-sources/spec2</output>
+              <modelPackage>com.compare.spec2.model</modelPackage>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>add-generated-sources</id>
+            <phase>generate-sources</phase>
+            <goals><goal>add-source</goal></goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/spec1/src/main/java</source>
+                <source>${project.build.directory}/generated-sources/spec2/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

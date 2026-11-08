@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  title: Selftest Orders API
+  version: 1.1.0
+paths:
+  /orders:
+    get:
+      operationId: listOrders
+      parameters:
+        - name: section            # renamed query parameter (was category)
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    post:
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  /orders/{orderId}/window:
+    get:                           # operationId removed
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Window
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeWindow'
+components:
+  schemas:
+    OrderStatus:
+      type: string
+      enum: [NEW, PAID, SHIPPED, RETURNED]           # LOST -> RETURNED
+    Base:                                            # unreferenced allOf base
+      type: object
+      properties:
+        id:
+          type: string
+    TimeWindow:                                      # renamed from DeliveryWindow
+      type: object
+      required: [from, to]
+      properties:
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+    Order:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          required: [id, quantity, status, email]    # email now required
+          properties:
+            quantity:
+              type: integer
+              format: int64                          # int32 -> int64
+            placedOn:
+              type: string
+              format: date-time                      # date -> date-time
+            section:                                 # renamed from category
+              type: string
+            note:
+              type: string
+              maxLength: 100                         # 200 -> 100, nullable dropped
+            giftWrap:
+              type: boolean
+              default: false                         # true -> false
+            status:
+              $ref: '#/components/schemas/OrderStatus'
+            email:
+              type: string
+              description: Email used for order updates
+            trackingUrl:                             # added optional property
+              type: string
+              format: uri
+                                                     # customer removed -> Customer schema gone
